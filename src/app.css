@@ -1,0 +1,480 @@
+:root {
+  --bg: #faf7f2;
+  --surface: #ffffff;
+  --ink: #292524;
+  --muted: #78716c;
+  --accent: #b45309;
+  --accent-dark: #92400e;
+  --border: #e7e5e4;
+  --radius: 10px;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+main {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.25rem;
+}
+
+/* ---------- two-pane layout ---------- */
+
+/* Mobile: the split only exists while an animal is selected — show only the
+   detail pane; the list returns via the back link. */
+@media (max-width: 63.999rem) {
+  .split .list-pane {
+    display: none;
+  }
+}
+
+/* Desktop: list and detail side by side. */
+@media (min-width: 64rem) {
+  main {
+    width: 75%;
+    max-width: none;
+  }
+
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    gap: 1.5rem;
+    align-items: stretch;
+    /* App-style layout: the page itself doesn't scroll; each pane does. */
+    height: calc(100vh - 2.5rem);
+  }
+
+  .list-pane {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .list-pane .intro {
+    flex: none;
+  }
+
+  .list-pane .listings {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+
+  /* Top of the pane sits flush with the first row of cards (--listings-top
+     is measured from the list's intro height in App.svelte); margin-bottom
+     keeps a little daylight below the card. */
+  .detail-pane {
+    margin-top: var(--listings-top, 0px);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: stretch;
+    min-height: 0;
+  }
+
+  .detail-pane .detail {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  /* The list is always visible on desktop, so a "back" link is meaningless.
+     (a.* beats the later bare-.back rule regardless of source order.) */
+  a.back {
+    display: none;
+  }
+}
+
+a {
+  color: var(--accent);
+}
+
+/* ---------- list view ---------- */
+
+.shelter-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.shelter-tab {
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+}
+
+.shelter-tab.active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+
+.page-header h1 {
+  margin: 0.5rem 0 0.25rem;
+}
+
+.subtitle {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.chip.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.search,
+select {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 0.95rem;
+}
+
+.search {
+  flex: 1 1 14rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgb(0 0 0 / 8%);
+}
+
+.card-photo {
+  aspect-ratio: 1 / 1;
+  background: var(--border);
+}
+
+.card-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.card-no-photo {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  font-size: 3rem;
+  color: var(--muted);
+}
+
+.card-body {
+  padding: 0.65rem 0.85rem 0.85rem;
+}
+
+.card-body h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.card-sub {
+  margin: 0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.card-breeds {
+  margin: 0.35rem 0 0;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.status {
+  padding: 2rem 0;
+  color: var(--muted);
+}
+
+.status.error {
+  color: #b91c1c;
+}
+
+.status.partial {
+  color: var(--accent-dark);
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+}
+
+/* ---------- detail view ---------- */
+
+.back {
+  display: inline-block;
+  margin-bottom: 1rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.detail {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.detail h1 {
+  margin: 0 0 0.25rem;
+}
+
+.detail-sub {
+  margin: 0 0 1rem;
+  color: var(--muted);
+}
+
+.detail-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.detail-facts span {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.85rem;
+}
+
+.kennel-id {
+  margin: -0.5rem 0 1rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.gallery-thumb {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.gallery-thumb img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--radius);
+  display: block;
+  transition: opacity 0.15s ease;
+}
+
+.gallery-thumb:hover img {
+  opacity: 0.85;
+}
+
+/* ---------- lightbox ---------- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgb(0 0 0 / 88%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem;
+}
+
+.lightbox figure {
+  margin: 0;
+  max-width: min(90rem, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: calc(100vh - 8rem);
+  object-fit: contain;
+  border-radius: var(--radius);
+  display: block;
+}
+
+.lightbox figcaption {
+  color: #d6d3d1;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.lb-close {
+  position: absolute;
+  top: 1rem;
+  right: 1.25rem;
+  background: none;
+  border: 0;
+  color: #fff;
+  font-size: 2.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+
+.lb-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgb(255 255 255 / 12%);
+  border: 0;
+  color: #fff;
+  font-size: 2.5rem;
+  line-height: 1;
+  padding: 0.75rem 0.9rem;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.lb-nav:hover,
+.lb-close:hover {
+  background: rgb(255 255 255 / 22%);
+}
+
+.lb-prev {
+  left: 1rem;
+}
+
+.lb-next {
+  right: 1rem;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.video-grid iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--radius);
+}
+
+.bio {
+  white-space: pre-line;
+  line-height: 1.55;
+}
+
+.adopt-cta {
+  display: inline-block;
+  margin-top: 1rem;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+}
+
+.adopt-cta:hover {
+  background: var(--accent-dark);
+}
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.cta-row .adopt-cta {
+  margin-top: 0;
+}
+
+/* In the fixed-height split view the page itself shouldn't scroll — the
+   footer would add exactly one scrollbar's worth of overscroll. */
+@media (min-width: 64rem) {
+  main:has(.split) + .site-footer {
+    display: none;
+  }
+}
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  margin-top: 2.5rem;
+  padding: 1rem 1.25rem 1.5rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
