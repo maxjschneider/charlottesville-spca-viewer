@@ -55,4 +55,6 @@ export interface AnimalDetail extends Animal {
   weight?: number | string | null
   weight_units?: string | null
   videos: unknown[]
+  /** The shelter's own pet id, when it differs from our uniqueId (RescueGroups). */
+  rescue_id?: string
 }

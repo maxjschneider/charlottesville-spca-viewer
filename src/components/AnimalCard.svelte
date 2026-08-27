@@ -15,6 +15,13 @@
   const breeds = $derived(
     [animal.breed, animal.secondary_breed].filter(Boolean).join(' / '),
   )
+  // Some fields (sex, age) are unknown for freshly-listed RescueGroups
+  // animals until the next build refreshes the snapshot.
+  const subtitle = $derived(
+    [animal.species, animal.sex, age, showShelter ? shelter.short : '']
+      .filter(Boolean)
+      .join(' · '),
+  )
 </script>
 
 <a class="card" href={animalHref(shelter.id, animal.uniqueId)}>
@@ -27,11 +34,7 @@
   </div>
   <div class="card-body">
     <h3>{animal.name}</h3>
-    <p class="card-sub">
-      {animal.species} &middot; {animal.sex}{age ? ` · ${age}` : ''}{showShelter
-        ? ` · ${shelter.short}`
-        : ''}
-    </p>
+    <p class="card-sub">{subtitle}</p>
     {#if breeds}
       <p class="card-breeds">{breeds}</p>
     {/if}

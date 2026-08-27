@@ -12,9 +12,11 @@
   let detail = $state<AnimalDetail | null>(null)
   let loadError = $state<string | null>(null)
 
+  // detail.photos is the summary's photos plus any extra gallery URLs the
+  // build-time snapshot scraped from the animal's detail page.
   const photos = $derived(
-    summary
-      ? Object.values(summary.photos ?? {}).sort(
+    detail
+      ? Object.values(detail.photos ?? {}).sort(
           (a, b) => Number(b.isCover) - Number(a.isCover) || a.order_column - b.order_column,
         )
       : [],
@@ -141,7 +143,7 @@
       {/if}
     </div>
 
-    <p class="kennel-id">Shelter ID: {summary.uniqueId}</p>
+    <p class="kennel-id">Shelter ID: {detail?.rescue_id ?? summary.uniqueId}</p>
 
     {#if photos.length > 0}
       <div class="gallery">
@@ -177,14 +179,25 @@
     {/if}
 
     <div class="cta-row">
-      <a
-        class="adopt-cta"
-        href={`https://new.shelterluv.com/matchme/adopt/${shelter.prefix}/${encodeURIComponent(summary.species)}`}
-        target="_blank"
-        rel="noreferrer"
-      >
-        Fill out the adoption interest form ↗
-      </a>
+      {#if shelter.kind === 'shelterluv'}
+        <a
+          class="adopt-cta"
+          href={`https://new.shelterluv.com/matchme/adopt/${shelter.prefix}/${encodeURIComponent(summary.species)}`}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Fill out the adoption interest form ↗
+        </a>
+      {:else}
+        <a
+          class="adopt-cta"
+          href={shelter.adoptUrl}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Adoption process ↗
+        </a>
+      {/if}
       <a class="adopt-cta" href={summary.public_url} target="_blank" rel="noreferrer">
         Original listing ↗
       </a>

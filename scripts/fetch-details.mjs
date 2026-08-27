@@ -1,29 +1,41 @@
 /**
  * Fetches every available animal's detail page (bio, adoption fee, weight,
- * videos) from Shelterluv for all shelters and bakes the results into
+ * videos) for all shelters and bakes the results into
  * src/lib/details.{shelter}.json, which the app imports at build time.
  *
- * Why build-time? The detail pages send no CORS headers, so browsers can't
- * fetch them directly; GitHub Actions runners (and your machine) have no
- * such restriction.
+ * Why build-time? Detail data isn't reachable from browsers (Shelterluv
+ * detail pages send no CORS headers; the RescueGroups toolkit serves only
+ * server-rendered HTML fragments with no JSON API), but GitHub Actions
+ * runners (and your machine) have no such restriction.
  *
  * Run manually via `npm run fetch-details` — the deploy workflow runs it
  * before every build (push-triggered and cron-refreshed).
  *
- * Politeness: bounded concurrency (4) and one retry per page. ~130 requests
- * per run across shelters, a few runs per day at most.
+ * Politeness: bounded concurrency (4) and one retry per page. Roughly 130
+ * requests per run for the Shelterluv shelters plus one list page per ~24
+ * animals and one detail page per animal for Nelson, a few runs per day
+ * at most.
  */
 import { writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 
-const API_BASE = 'https://new.shelterluv.com'
+const SHELTERLUV_BASE = 'https://new.shelterluv.com'
+const RG_TOOLKIT_BASE = 'https://toolkit.rescuegroups.org/j/3'
 const SHELTERS = [
-  { id: 'caspca', gid: 2783 },
-  { id: 'fspca', gid: 4193 },
+  { id: 'caspca', kind: 'shelterluv', gid: 2783 },
+  { id: 'fspca', kind: 'shelterluv', gid: 4193 },
+  {
+    id: 'nspca',
+    kind: 'rescuegroups',
+    toolkitKey: 'yjYRO6T3',
+    toolkitKeyID: '8754',
+  },
 ]
 const CONCURRENCY = 4
 const RETRY_DELAY_MS = 1500
+const RG_PAGE_SIZE = 24
+const RG_MAX_PAGES = 25
 
 const OUT_DIR = path.join(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -56,6 +68,10 @@ async function fetchText(url) {
   return res.text()
 }
 
+// ---------------------------------------------------------------------------
+// Shelterluv
+// ---------------------------------------------------------------------------
+
 /** Returns the detail fields for one animal, or null if extraction fails. */
 async function scrapeAnimal(animal) {
   for (let attempt = 1; attempt <= 2; attempt++) {
@@ -86,9 +102,9 @@ async function scrapeAnimal(animal) {
   }
 }
 
-async function scrapeShelter({ id, gid }) {
+async function scrapeShelterluv({ id, gid }) {
   console.log(`\n[${id}] Fetching animal list…`)
-  const res = await fetch(`${API_BASE}/api/v3/available-animals/${gid}`, {
+  const res = await fetch(`${SHELTERLUV_BASE}/api/v3/available-animals/${gid}`, {
     headers: { Accept: 'application/json' },
   })
   if (!res.ok) throw new Error(`List API responded ${res.status}`)
@@ -113,15 +129,153 @@ async function scrapeShelter({ id, gid }) {
 
   await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()))
 
+  await writeSnapshot(id, snapshot, animals.length, failed)
+}
+
+// ---------------------------------------------------------------------------
+// RescueGroups Pet Adoption Toolkit
+//
+// The grid fragment (grid3_layout.php) only publishes name + photo + internal
+// animal id, so the snapshot here also carries summary fields (sex, breed,
+// age, location) that src/lib/api.ts folds into list results. The regexes
+// mirror rgParseGrid / the pet1 extraction in api.ts — the markup is
+// machine-generated and stable, but a toolkit redesign breaks both.
+// ---------------------------------------------------------------------------
+
+/** Parse one grid3_layout.php fragment into { total, cells } (see api.ts). */
+function parseToolkitGrid(html) {
+  const total = Number(
+    html.match(/([\d,]+)\s+pets found/i)?.[1]?.replace(/,/g, '') ?? 0,
+  )
+  const cells = []
+  const seen = new Set()
+  for (const chunk of html.split('<td class="rgtkSearchResultsCell">').slice(1)) {
+    const id = chunk.match(/toolkitFocusPet_\(,\s*(\d+),/)?.[1]
+    if (!id || seen.has(id)) continue
+    seen.add(id)
+    cells.push({
+      id,
+      name:
+        chunk.match(/rgtkSearchPetName[^>]*><a[^>]*>([^<]+)<\/a>/)?.[1]?.trim() ??
+        'Unnamed',
+      photo: chunk.match(/rgtkSearchPetPicImg"\s+src="([^"]+)"/)?.[1] ?? null,
+    })
+  }
+  return { total, cells }
+}
+
+/** Pull the human description out of the pet1 fragment as plain text. */
+function extractToolkitDescription(html) {
+  const block = html.match(
+    /rgtkPetFieldDescription[^>]*>([\s\S]*?)<div class="rgtkPetMoreabout/,
+  )?.[1]
+  if (!block) return undefined
+  // The toolkit wraps the bio in rgHeader/rgFooter scaffolding; keep the
+  // description body when present.
+  const desc = block.match(/<div class="rgDescription">([\s\S]*?)<\/div>/)?.[1] ?? block
+  return (
+    decodeEntities(
+      desc
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<[^>]+>/g, ''),
+    )
+      .replace(/[ \t]+\n/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim() || undefined
+  )
+}
+
+/** Returns the snapshot entry for one animal, or null if extraction fails. */
+async function scrapeToolkitAnimal(cell, shelter) {
+  for (let attempt = 1; attempt <= 2; attempt++) {
+    try {
+      const html = await fetchText(
+        `${RG_TOOLKIT_BASE}/pet1_layout.php?toolkitKey=${shelter.toolkitKey}` +
+          `&toolkitKeyID=${shelter.toolkitKeyID}&animalID=${cell.id}`,
+      )
+      const text = (cls) =>
+        html.match(new RegExp(`${cls}[^>]*>([^<]+)<`))?.[1]?.trim()
+      // The primary photo link repeats the grid's cover image; keep only
+      // the additional gallery entries.
+      const gallery = [
+        ...html.matchAll(/href="([^"]+)"[^>]*rel="prettyPhoto\[pp_gal\]"/g),
+      ]
+        .map((m) => m[1])
+        .filter((url, i, all) => url !== cell.photo && all.indexOf(url) === i)
+      return {
+        sex: text('rgtkPetDetailsSex'),
+        breed: text('rgtkPetDetailsBreed'),
+        age_category: text('rgtkPetDetailsAge'),
+        location: text('rgtkPetFieldLocation'),
+        rescue_id: text('rgtkPetFieldRescueID')?.replace(/^Pet ID #\s*/, ''),
+        kennel_description: extractToolkitDescription(html),
+        extra_photos: gallery,
+        videos: [],
+      }
+    } catch (err) {
+      if (attempt === 2) {
+        console.warn(`  ! ${cell.id}: ${err.message}`)
+        return null
+      }
+      await new Promise((r) => setTimeout(r, RETRY_DELAY_MS))
+    }
+  }
+}
+
+async function scrapeRescueGroups(shelter) {
+  console.log(`\n[${shelter.id}] Fetching animal list…`)
+  const cells = []
+  const seen = new Set()
+  let total = Infinity
+  for (let page = 1; cells.length < total && page <= RG_MAX_PAGES; page++) {
+    const html = await fetchText(
+      `${RG_TOOLKIT_BASE}/grid3_layout.php?toolkitKey=${shelter.toolkitKey}` +
+        `&toolkitKeyID=${shelter.toolkitKeyID}&page_=${page}`,
+    )
+    const parsed = parseToolkitGrid(html)
+    total = parsed.total
+    for (const cell of parsed.cells) {
+      if (!seen.has(cell.id)) {
+        seen.add(cell.id)
+        cells.push(cell)
+      }
+    }
+  }
+  console.log(`[${shelter.id}] Found ${cells.length} animals. Fetching details…`)
+
+  const snapshot = {}
+  let done = 0
+  let failed = 0
+  const queue = [...cells]
+
+  async function worker() {
+    while (queue.length > 0) {
+      const cell = queue.shift()
+      const detail = await scrapeToolkitAnimal(cell, shelter)
+      if (detail) snapshot[cell.id] = detail
+      else failed++
+      done++
+      if (done % 10 === 0) console.log(`  [${shelter.id}] ${done}/${cells.length}`)
+    }
+  }
+
+  await Promise.all(Array.from({ length: CONCURRENCY }, () => worker()))
+
+  await writeSnapshot(shelter.id, snapshot, cells.length, failed)
+}
+
+// ---------------------------------------------------------------------------
+
+async function writeSnapshot(id, snapshot, count, failed) {
   const outFile = path.join(OUT_DIR, `details.${id}.json`)
   await writeFile(outFile, JSON.stringify(snapshot, null, 2) + '\n')
   console.log(
-    `[${id}] Wrote ${Object.keys(snapshot).length}/${animals.length} details to ${path.basename(outFile)}` +
+    `[${id}] Wrote ${Object.keys(snapshot).length}/${count} details to ${path.basename(outFile)}` +
       (failed ? ` (${failed} failed)` : ''),
   )
-  if (failed > animals.length / 4) {
+  if (failed > count / 4) {
     console.error(
-      `[${id}] Too many failures (${failed}/${animals.length}) — upstream may be down; keeping existing snapshot`,
+      `[${id}] Too many failures (${failed}/${count}) — upstream may be down; keeping existing snapshot`,
     )
     process.exitCode = 1
   }
@@ -131,7 +285,8 @@ async function main() {
   // Shelters sequentially: keeps peak concurrency bounded to CONCURRENCY
   // overall, rather than CONCURRENCY per shelter.
   for (const shelter of SHELTERS) {
-    await scrapeShelter(shelter)
+    if (shelter.kind === 'shelterluv') await scrapeShelterluv(shelter)
+    else await scrapeRescueGroups(shelter)
   }
 }
 

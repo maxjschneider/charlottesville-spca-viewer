@@ -1,13 +1,13 @@
 {
+  "FLVA-A-2042": {
+    "weight": 58,
+    "weight_units": "lbs",
+    "videos": []
+  },
   "FLVA-A-52623": {
     "kennel_description": "Meet Kitty — a gentle, sweet 2-year-old girl looking for a calm home and a patient human to<br />\nlove.<br />\n<br />\nKitty is shy at first, but once she feels safe, she adores gentle affection, belly rubs, cozy cat<br />\nbeds, and quiet companionship. She’s especially wonderful with other cats and would make an<br />\namazing feline friend for a cat who needs a buddy.<br />\n<br />\nShe thrives with calm people, slow introductions, and predictable routines. Loud environments<br />\nand fast movements make her nervous, so she’s hoping for a quieter home where she can<br />\nblossom at her own pace.<br />\n<br />\nKitty may take a little time to trust, but her foster family promises: she is absolutely worth the<br />\nwait.<br />\n<br />\nIf you believe the best relationships are earned slowly and lovingly, Kitty may be your perfect<br />\nmatch.",
     "adoptionFee": "$20.00",
     "weight": 8.6,
-    "weight_units": "lbs",
-    "videos": []
-  },
-  "FLVA-A-2042": {
-    "weight": 58,
     "weight_units": "lbs",
     "videos": []
   },
@@ -22,13 +22,6 @@
     "kennel_description": "Meet Rocher!<br />\n<br />\nRocher is a hound with a nose for rest and relaxation!<br />\n<br />\nThis gentleman loves to luxuriate in a sunny spot and take a long nap after breakfast and brief morning walk. His perfect day is filled with soft blankets and treats.<br />\n<br />\nHis ideal home has multiple snuggle spots for him to pick from, plenty of snacks, and someone to tell him all about their day. He enjoys an occasional play bow and zoomie scoot session with his close human friends followed by hours of peace and quiet.<br />\n<br />\nRocher is not your typical hound. He isn’t eager to run for miles or vigorous rustle and tussle play. He adores the simple pleasures and looks forward a quiet life with people who love hims as much as he loves them.<br />\n<br />\nHe is shy with new people and will need a family who is ok going slow and letting him gain confidence overtime. What charming introvert doesn't need a minute to build trust?<br />\n<br />\nApply to adopt Rocher today or come and meet him at the shelter!",
     "adoptionFee": "$20.00",
     "weight": 51,
-    "weight_units": "lbs",
-    "videos": []
-  },
-  "FLVA-A-53071": {
-    "kennel_description": "Meet Cappo! This handsome guy came to us in January after being rescued from a neglect case, where life wasn’t always kind. At first, the world felt huge and unfamiliar, but thanks to the patience and dedication of our staff, he has blossomed into a happy, social dog who now seeks out affection, enjoys spending time with people, and has discovered that life can be full of good things.<br />\n<br />\nWatching his transformation has been nothing short of incredible. The dog who once didn’t know what love looked like now greets familiar faces with a wagging tail and is ready to make new friends.<br />\n<br />\nThis special dog deserves a home that will continue building his confidence, celebrate how far he has come, and give him the love he’s always deserved.",
-    "adoptionFee": "$20.00",
-    "weight": 46,
     "weight_units": "lbs",
     "videos": []
   },
@@ -52,21 +45,28 @@
     "weight_units": "lbs",
     "videos": []
   },
+  "FLVA-A-53071": {
+    "kennel_description": "Meet Cappo! This handsome guy came to us in January after being rescued from a neglect case, where life wasn’t always kind. At first, the world felt huge and unfamiliar, but thanks to the patience and dedication of our staff, he has blossomed into a happy, social dog who now seeks out affection, enjoys spending time with people, and has discovered that life can be full of good things.<br />\n<br />\nWatching his transformation has been nothing short of incredible. The dog who once didn’t know what love looked like now greets familiar faces with a wagging tail and is ready to make new friends.<br />\n<br />\nThis special dog deserves a home that will continue building his confidence, celebrate how far he has come, and give him the love he’s always deserved.",
+    "adoptionFee": "$20.00",
+    "weight": 46,
+    "weight_units": "lbs",
+    "videos": []
+  },
   "FLVA-A-53231": {
     "kennel_description": "Daisy is a sweet girl who just wants a home to bounce around in and then curl up for a good snuggle! She is working hard on her manners and is starting to master her leash skills with the help of treats and a harness!<br />\n<br />\nShe has spent some time in a foster home, but is now looking for a couch to land on permanently. ",
     "weight": 53,
     "weight_units": "lbs",
     "videos": []
   },
-  "FLVA-A-53302": {
-    "kennel_description": "Meet Dahlia! Our sweet, sensitive, and silly hippo pitty.<br />\n<br />\nDahlia came to us after living most of her life as an outside dog, so she is still learning that new people and experiences aren’t scary. But once she is comfortable, she is the silliest goofball and loves to romp and run. With the occasional crash landing right into your lap!<br />\n<br />\nIf you’re looking for an active “introvert” of a dog, Dahlia is your girl!",
-    "weight": 60,
-    "weight_units": "lbs",
-    "videos": []
-  },
   "FLVA-A-53232": {
     "kennel_description": "Pebbles is a higher energy girl who LOVES to play, especially with tennis balls! She is smart and very food motivated, so staff has been having a lot of fun training with her. <br />\n<br />\nShe can be hesitant to meet new people and is sensitive to being touched, so giving affection and cuddles is reserved for her favorite people. She recently spent time in a foster home and after about 2 days she blossomed into the most loving little snuggle bug. 🥰<br />\n<br />\nIf you're looking for an adventure buddy who will reward you with a deep bond and lots cuddles, then Pebbles is your girl!",
     "weight": 34,
+    "weight_units": "lbs",
+    "videos": []
+  },
+  "FLVA-A-53302": {
+    "kennel_description": "Meet Dahlia! Our sweet, sensitive, and silly hippo pitty.<br />\n<br />\nDahlia came to us after living most of her life as an outside dog, so she is still learning that new people and experiences aren’t scary. But once she is comfortable, she is the silliest goofball and loves to romp and run. With the occasional crash landing right into your lap!<br />\n<br />\nIf you’re looking for an active “introvert” of a dog, Dahlia is your girl!",
+    "weight": 60,
     "weight_units": "lbs",
     "videos": []
   },
@@ -77,12 +77,6 @@
   },
   "FLVA-A-53314": {
     "weight": 2.6,
-    "weight_units": "lbs",
-    "videos": []
-  },
-  "FLVA-A-53337": {
-    "kennel_description": "I'm still settling into life at Fluvanna SPCA, so the staff is continuing to learn more about me each day. Visit the shelter and talk with a team member to find out what they've discovered so far—you may just meet your new best friend!",
-    "weight": 2.56,
     "weight_units": "lbs",
     "videos": []
   },
@@ -98,14 +92,21 @@
     "weight_units": "lbs",
     "videos": []
   },
+  "FLVA-A-53337": {
+    "kennel_description": "I'm still settling into life at Fluvanna SPCA, so the staff is continuing to learn more about me each day. Visit the shelter and talk with a team member to find out what they've discovered so far—you may just meet your new best friend!",
+    "weight": 2.56,
+    "weight_units": "lbs",
+    "videos": []
+  },
   "FLVA-A-53338": {
     "kennel_description": "I'm still settling into life at Fluvanna SPCA, so the staff is continuing to learn more about me each day. Visit the shelter and talk with a team member to find out what they've discovered so far—you may just meet your new best friend!",
     "weight": 2.3,
     "weight_units": "lbs",
     "videos": []
   },
-  "FLVA-A-53370": {
-    "weight": 2.1,
+  "FLVA-A-53354": {
+    "kennel_description": "Meet Chase — aka “Sweet Cheeks” ❤️<br />\n<br />\nChase is ready to settle into the good life, and his foster mom says he is going to make someone an incredible companion.<br />\n<br />\nHe’s a loyal, affectionate guy who is looking for his person. He can be a little unsure about unfamiliar things at first, but he quickly learns to trust—and once he does, get ready for some serious affection.<br />\n<br />\nHis foster mom calls him “Sweet Cheeks” because he is always leaning his head against her. Chase wants to be touching his person whenever possible. Sitting at your desk? He’ll lie on your feet. On the couch? He’s ready to snuggle. He’s even well on his way to becoming a lap cat!<br />\n<br />\nChase also LOVES being petted and brushed. ❤️ <br />\n<br />\nWhoever adopts this sweet boy is getting a devoted companion, professional snuggler, and excellent foot warmer.<br />\n<br />\nCome meet Chase and see if you might be the person “Sweet Cheeks” has been waiting for. 🥹❤️",
+    "weight": 9.14,
     "weight_units": "lbs",
     "videos": []
   },
@@ -115,9 +116,8 @@
     "weight_units": "lbs",
     "videos": []
   },
-  "FLVA-A-53354": {
-    "kennel_description": "Meet Chase — aka “Sweet Cheeks” ❤️<br />\n<br />\nChase is ready to settle into the good life, and his foster mom says he is going to make someone an incredible companion.<br />\n<br />\nHe’s a loyal, affectionate guy who is looking for his person. He can be a little unsure about unfamiliar things at first, but he quickly learns to trust—and once he does, get ready for some serious affection.<br />\n<br />\nHis foster mom calls him “Sweet Cheeks” because he is always leaning his head against her. Chase wants to be touching his person whenever possible. Sitting at your desk? He’ll lie on your feet. On the couch? He’s ready to snuggle. He’s even well on his way to becoming a lap cat!<br />\n<br />\nChase also LOVES being petted and brushed. ❤️ <br />\n<br />\nWhoever adopts this sweet boy is getting a devoted companion, professional snuggler, and excellent foot warmer.<br />\n<br />\nCome meet Chase and see if you might be the person “Sweet Cheeks” has been waiting for. 🥹❤️",
-    "weight": 9.14,
+  "FLVA-A-53370": {
+    "weight": 2.2,
     "weight_units": "lbs",
     "videos": []
   },
@@ -156,15 +156,15 @@
     "weight_units": "lbs",
     "videos": []
   },
-  "FLVA-A-53455": {
-    "kennel_description": "Meet Woodrow (Woody to his friends!)<br />\n<br />\nThis silly guy has classic, goofy lab energy. He could not be more thrilled to someone coming with a leash in hand. When he works on his manners, he is delighted to have snuggles, a treat, or a quick play session as a reward.<br />\n<br />\nHe enjoys the company of some dogs in play group, but would like to be a family's one and only dog in the house.<br />\n<br />\nIf Woodrow is the kind of sweet re-treat-ver you are looking for, apply for him today or come to the shelter and meet him in person!",
-    "weight": 59,
-    "weight_units": "lbs",
-    "videos": []
-  },
   "FLVA-A-53450": {
     "kennel_description": "Meet Scarlett!<br />\n<br />\nScarlett is a striking beauty who is sure to charm anyone she meets. This sweet young cat is ready to find her forever home where she can grow and thrive.<br />\n<br />\nApply for Scarlett today or visit the shelter to meet her in person!",
     "weight": 11.12,
+    "weight_units": "lbs",
+    "videos": []
+  },
+  "FLVA-A-53455": {
+    "kennel_description": "Meet Woodrow (Woody to his friends!)<br />\n<br />\nThis silly guy has classic, goofy lab energy. He could not be more thrilled to someone coming with a leash in hand. When he works on his manners, he is delighted to have snuggles, a treat, or a quick play session as a reward.<br />\n<br />\nHe enjoys the company of some dogs in play group, but would like to be a family's one and only dog in the house.<br />\n<br />\nIf Woodrow is the kind of sweet re-treat-ver you are looking for, apply for him today or come to the shelter and meet him in person!",
+    "weight": 59,
     "weight_units": "lbs",
     "videos": []
   },
@@ -172,6 +172,10 @@
     "kennel_description": "Meet Benny!<br />\n<br />\nBenny is a shy, sensitive guy with a playful streak a mile wide, once he gets to know you.<br />\n<br />\nHe loves other dogs and toys. Play group time is one of Benny's favorite activities. He shows his joyful, silly side bounding in the yard alongside his buds! It's a treat for the staff to watch him relax and have fun.<br />\n<br />\nHe may take some time to open up, but its time well spent to get to be a part of Benny's trusted friends.<br />\n<br />\nIf Benny is your kind of gentleman, apply for him today or come by the shelter to meet him!",
     "weight": 54,
     "weight_units": "lbs",
+    "videos": []
+  },
+  "FLVA-A-53477": {
+    "weight": "",
     "videos": []
   },
   "FLVA-A-53457": {
@@ -185,12 +189,13 @@
     "weight_units": "lbs",
     "videos": []
   },
-  "FLVA-A-53477": {
-    "weight": "",
-    "videos": []
-  },
   "FLVA-A-53482": {
     "weight": 4,
+    "weight_units": "lbs",
+    "videos": []
+  },
+  "FLVA-A-53492": {
+    "weight": 4.5,
     "weight_units": "lbs",
     "videos": []
   },
@@ -199,8 +204,23 @@
     "weight_units": "lbs",
     "videos": []
   },
+  "FLVA-A-53502": {
+    "weight": 1.4,
+    "weight_units": "lbs",
+    "videos": []
+  },
+  "FLVA-A-53503": {
+    "weight": 1.42,
+    "weight_units": "lbs",
+    "videos": []
+  },
   "FLVA-A-53504": {
     "weight": 56,
+    "weight_units": "lbs",
+    "videos": []
+  },
+  "FLVA-A-53518": {
+    "weight": 1.56,
     "weight_units": "lbs",
     "videos": []
   },
@@ -216,14 +236,14 @@
     "weight_units": "lbs",
     "videos": []
   },
-  "FLVA-A-53540": {
-    "weight": 4.7,
-    "weight_units": "lbs",
-    "videos": []
-  },
   "FLVA-A-53539": {
     "adoptionFee": "$200.00",
     "weight": 3.6,
+    "weight_units": "lbs",
+    "videos": []
+  },
+  "FLVA-A-53540": {
+    "weight": 4.7,
     "weight_units": "lbs",
     "videos": []
   },
@@ -232,13 +252,13 @@
     "weight_units": "lbs",
     "videos": []
   },
-  "FLVA-A-53547": {
-    "weight": 9.2,
+  "FLVA-A-53563": {
+    "weight": 6.8,
     "weight_units": "lbs",
     "videos": []
   },
-  "FLVA-A-53563": {
-    "weight": 6.8,
+  "FLVA-A-53547": {
+    "weight": 9.2,
     "weight_units": "lbs",
     "videos": []
   },
@@ -252,13 +272,18 @@
     "weight_units": "lbs",
     "videos": []
   },
-  "FLVA-A-53573": {
-    "weight": 4.38,
+  "FLVA-A-53575": {
+    "weight": 6.64,
     "weight_units": "lbs",
     "videos": []
   },
-  "FLVA-A-53575": {
-    "weight": 6.64,
+  "FLVA-A-53589": {
+    "weight": 9.7,
+    "weight_units": "lbs",
+    "videos": []
+  },
+  "FLVA-A-53573": {
+    "weight": 4.38,
     "weight_units": "lbs",
     "videos": []
   }

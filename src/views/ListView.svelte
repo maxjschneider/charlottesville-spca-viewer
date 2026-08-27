@@ -121,6 +121,16 @@
     for (const a of list) map.set(a.species, (map.get(a.species) ?? 0) + 1)
     return map
   }
+
+  const dataSources = $derived(
+    [
+      ...new Set(
+        shelters.map((s) =>
+          s.kind === 'shelterluv' ? 'Shelterluv' : 'RescueGroups',
+        ),
+      ),
+    ].join(' + '),
+  )
 </script>
 
 <div class="intro">
@@ -139,14 +149,14 @@
       class:active={scopeId === COMBINED_ID}
       href={listHref(COMBINED_ID)}
     >
-      Both
+      All
     </a>
   </nav>
 
   <header class="page-header">
     <h1>Adoptable pets</h1>
     <p class="subtitle">
-      {shelters.map((s) => s.name).join(' + ')} &middot; data via Shelterluv
+      {shelters.map((s) => s.name).join(' + ')} &middot; data via {dataSources}
     </p>
   </header>
 
