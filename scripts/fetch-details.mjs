@@ -34,6 +34,10 @@ const SHELTERS = [
 ]
 const CONCURRENCY = 4
 const RETRY_DELAY_MS = 1500
+/** Attempts per HTTP request, for transient flakes (ECONNRESET, 5xx, 429). */
+const FETCH_ATTEMPTS = 3
+/** Some middleboxes reset connections from default client UAs; identify honestly. */
+const USER_AGENT = 'charlottesville-spca-viewer/1.0 (unofficial adoption viewer)'
 const RG_PAGE_SIZE = 24
 const RG_MAX_PAGES = 25
 
@@ -62,10 +66,53 @@ function decodeEntities(s) {
   })
 }
 
-async function fetchText(url) {
-  const res = await fetch(url, { headers: { Accept: 'text/html' } })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  return res.text()
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
+/** Network/socket errors and 4xx/5xx statuses worth one more attempt. */
+function isTransient(err) {
+  const codes = [
+    'ECONNRESET',
+    'ETIMEDOUT',
+    'ECONNREFUSED',
+    'EAI_AGAIN',
+    'EPIPE',
+    'UND_ERR_SOCKET',
+    'UND_ERR_CONNECT_TIMEOUT',
+  ]
+  const code = err?.cause?.code ?? err?.code
+  if (code && codes.includes(code)) return true
+  if (err?.transient) return true
+  return /fetch failed|socket hang up|network/i.test(err?.message ?? '')
+}
+
+/** Fetch with bounded retries; throws the last error if all attempts fail. */
+async function fetchWithRetry(url, parse) {
+  for (let attempt = 1; attempt <= FETCH_ATTEMPTS; attempt++) {
+    try {
+      const res = await fetch(url, {
+        headers: { Accept: 'text/html', 'User-Agent': USER_AGENT },
+      })
+      if (!res.ok) {
+        const err = new Error(`HTTP ${res.status}`)
+        // Rate limiting and server errors usually clear on retry; client
+        // errors (403 bot-block, 404) won't — fail fast on those.
+        err.transient = res.status === 429 || res.status >= 500
+        throw err
+      }
+      return await parse(res)
+    } catch (err) {
+      if (attempt === FETCH_ATTEMPTS || !isTransient(err)) throw err
+      await sleep(RETRY_DELAY_MS * attempt)
+    }
+  }
+}
+
+function fetchText(url) {
+  return fetchWithRetry(url, (res) => res.text())
+}
+
+function fetchJson(url) {
+  return fetchWithRetry(url, (res) => res.json())
 }
 
 // ---------------------------------------------------------------------------
@@ -104,11 +151,9 @@ async function scrapeAnimal(animal) {
 
 async function scrapeShelterluv({ id, gid }) {
   console.log(`\n[${id}] Fetching animal list…`)
-  const res = await fetch(`${SHELTERLUV_BASE}/api/v3/available-animals/${gid}`, {
-    headers: { Accept: 'application/json' },
-  })
-  if (!res.ok) throw new Error(`List API responded ${res.status}`)
-  const { animals } = await res.json()
+  const { animals } = await fetchJson(
+    `${SHELTERLUV_BASE}/api/v3/available-animals/${gid}`,
+  )
   console.log(`[${id}] Found ${animals.length} animals. Fetching details…`)
 
   const snapshot = {}
@@ -266,9 +311,21 @@ async function scrapeRescueGroups(shelter) {
 
 // ---------------------------------------------------------------------------
 
+/** Sort keys (numerically for id-only snapshots) so re-runs diff cleanly
+ * instead of churning key order with the upstream list's ordering. */
+function sortSnapshot(snapshot) {
+  return Object.fromEntries(
+    Object.keys(snapshot)
+      .sort((a, b) =>
+        Number(a) && Number(b) ? a - b : a.localeCompare(b),
+      )
+      .map((k) => [k, snapshot[k]]),
+  )
+}
+
 async function writeSnapshot(id, snapshot, count, failed) {
   const outFile = path.join(OUT_DIR, `details.${id}.json`)
-  await writeFile(outFile, JSON.stringify(snapshot, null, 2) + '\n')
+  await writeFile(outFile, JSON.stringify(sortSnapshot(snapshot), null, 2) + '\n')
   console.log(
     `[${id}] Wrote ${Object.keys(snapshot).length}/${count} details to ${path.basename(outFile)}` +
       (failed ? ` (${failed} failed)` : ''),
@@ -283,14 +340,32 @@ async function writeSnapshot(id, snapshot, count, failed) {
 
 async function main() {
   // Shelters sequentially: keeps peak concurrency bounded to CONCURRENCY
-  // overall, rather than CONCURRENCY per shelter.
+  // overall, rather than CONCURRENCY per shelter. A failure on one shelter
+  // (upstream outage) doesn't stop the others from refreshing — the failed
+  // shelter's committed snapshot is kept and the run exits non-zero so the
+  // failure is visible.
+  let failed = false
   for (const shelter of SHELTERS) {
-    if (shelter.kind === 'shelterluv') await scrapeShelterluv(shelter)
-    else await scrapeRescueGroups(shelter)
+    try {
+      if (shelter.kind === 'shelterluv') await scrapeShelterluv(shelter)
+      else await scrapeRescueGroups(shelter)
+    } catch (err) {
+      failed = true
+      console.error(
+        `[${shelter.id}] Scraping failed after retries — keeping existing snapshot:`,
+        err?.message ?? err,
+      )
+    }
+  }
+  if (failed) {
+    console.error('One or more shelters failed to refresh.')
+    process.exitCode = 1
   }
 }
 
-main().catch((err) => {
-  console.error(err)
-  process.exit(1)
-})
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error(err)
+    process.exit(1)
+  })
+}

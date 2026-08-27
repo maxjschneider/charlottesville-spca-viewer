@@ -35,6 +35,11 @@ jobs:
 
       - name: Scrape animal details (server-side; browsers can't — no CORS)
         run: npm run fetch-details
+        # Freshness is best-effort: committed snapshots keep the site working
+        # (summary-only cards for anything newer), so a flaky upstream
+        # shouldn't block the deploy. The step still shows as failed — the
+        # script exits non-zero after exhausting its retries.
+        continue-on-error: true
 
       - name: Typecheck
         run: npm run check
